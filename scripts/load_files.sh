@@ -1,4 +1,4 @@
 port="/dev/ttyUSB0"
-
-ampy -p /dev/ttyUSB0 run main.py
+ampy -p ${port} put ..
+ampy -p ${port} run main.py
 
