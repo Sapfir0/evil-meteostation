@@ -1,5 +1,6 @@
 import dht
 import cfg
+import machine
 
 class Gradusnik():
     temperature = 0
@@ -7,6 +8,7 @@ class Gradusnik():
     illumination = 0
 
     grad = dht.DHT11(Pin(cfg.DHTPIN))
+
     def start(self):
         self.grad.measure()
 
@@ -16,8 +18,9 @@ class Gradusnik():
         return temperature
     
     def getHumidity(self):
-        humidity = self.grad.humidity();
-        return humidity;
+        humidity = self.grad.humidity()
+        return humidity
+
 
 
 
