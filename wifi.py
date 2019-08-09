@@ -1,5 +1,6 @@
 
 import urequests
+import config as cfg
 
 
 class WIFI(object):
@@ -31,9 +32,9 @@ class WIFI(object):
 
     def getQuery(self, url):
         r = urequests.get(url)
-        print(r.json())
-        r.close()
+        #print(r.json())
         self.parseWeatherJSON(r.json())
+        r.close()
 
     def parseWeatherJSON(self, root):
         self.weatherLocation = root["name"]
@@ -45,28 +46,38 @@ class WIFI(object):
         self.windDeg = root["wind"]["deg"]
         self.sunriseTime = root["sys"]["sunrise"]
         self.sunsetTime = root["sys"]["sunset"]
-        self.weatherDescription = root["weather"]["description"]
-        self.weatherID = root["weather"]["id"]
-        self.icon = root["weather"]["icon"]
+        try:
+            self.weatherDescription = root["weather"]["description"]
+            self.weatherID = root["weather"]["id"]
+            self.icon = root["weather"]["icon"]
+        except:
+            self.weatherDescription = root["weather"][0]["description"]
+            self.weatherID = root["weather"][0]["id"]
+            self.icon = root["weather"][0]["icon"]
 
-    # def postQuery(self, requestStr):
-    #     from gradusnik import Gradusnik
-    #     grad = Gradusnik()
-    #     data = {
-    #         "temperatureInHome=" + grad.getTemperature()
-    #         "&humidityInHome=" + grad.getHumidity()
-    #         "&temperature=" + self.temperature
-    #         "&humidity=" + self.humidity
-    #         "&pressure=" + toMmRtSt(self.pressure)
-    #         "&sansity=" + 0 
-    #         "&weatherId=" + self.weatherID
-    #         "&windSpeed=" + self.windSpeed 
-    #         "&windDeg=" + self.windDeg
-    #         "&icon=" + self.icon
-    #         "&engWeatherDescription=" + self.weatherDescription
-    #         "&meteostationId=" + cfg.meteostationId
-    #         "&sunriseTime=" + self.sunriseTime
-    #         "&sunsetTime=" + self.sunsetTime
-    #     }
-    #     r = urequests.post(cfg.ourServer, data)
+    def toMmRtSt(self, GectoPaskal):
+        res = GectoPaskal * 100 / 133
+        return res
+    
+    def postQuery(self):
+        from gradusnik import Gradusnik
+        grad = Gradusnik()
+        data = {
+            "temperatureInHome": grad.getTemperature(),
+            "humidityInHome": grad.getHumidity(),
+            "temperature": self.temperature,
+            "humidity": self.humidity,
+            "pressure": self.toMmRtSt(self.pressure),
+            "sansity": 0 ,
+            "weatherId": self.weatherID,
+            "windSpeed": self.windSpeed,
+            "windDeg": self.windDeg,
+            "icon": self.icon,
+            "engWeatherDescription": self.weatherDescription,
+            "meteostationId": cfg.meteostationId,
+            "sunriseTime": self.sunriseTime,
+            "sunsetTime": self.sunsetTime
+        }
+        print(data)
+        #r = urequests.post(cfg.ourServer, data)
 
