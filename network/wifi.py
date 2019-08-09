@@ -1,5 +1,3 @@
-
-import urequests
 import config as cfg
 
 
@@ -18,6 +16,10 @@ class WIFI(object):
     sunsetTime = None
     sunriseTime = None
 
+    def __init__(self):
+        import upip
+        upip.install("urequests")
+
     def do_connect(self):
         import network
         sta_if = network.WLAN(network.STA_IF)
@@ -31,6 +33,8 @@ class WIFI(object):
     
 
     def getQuery(self, url):
+        import urequests
+
         r = urequests.get(url)
         #print(r.json())
         self.parseWeatherJSON(r.json())
@@ -61,6 +65,8 @@ class WIFI(object):
     
     def postQuery(self):
         from gradusnik import Gradusnik
+        import urequests
+
         grad = Gradusnik()
         data = {
             "temperatureInHome": grad.getTemperature(),
