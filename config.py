@@ -16,7 +16,7 @@ meteostationId = 1
 def defineAnalog(nodemcuPin):
     physicalPins = ["D0", "D1", "D2", "D3", "D4", "D5", "D6", "D7", "D8", "D9", "D10", "D11", "D12"]
     programmPins = [16, 5, 4, 0, 2, 14, 12, 13, 15, 3, 1, 9, 10]
-    if (len(physicalPins) != len(programmPins)):
+    if len(physicalPins) != len(programmPins):
         raise Exception("Oh no")
     
     for i, pin in enumerate(physicalPins):
