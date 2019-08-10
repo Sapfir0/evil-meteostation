@@ -1,15 +1,15 @@
 import subprocess as sub
 import os
 from helpers.timeChecker import checkElapsedTime
+import argparse
 
-
-def upload(directory=".", removeOldFiles=False, compairFiles=False, excludedFiles=[]):
+def upload(directory=".", removeOldFiles=True, compairFiles=False, excludedFiles=[]):
     if compairFiles:
         compareFiles()
     if removeOldFiles:
         removeOldFilesFromMC()
-    #pushAllFiles(directory)
-    #run()
+    pushAllFiles(directory)
+    run()
 
 
 def push(input, output):
@@ -51,44 +51,64 @@ def rm(file, returnAllStatements=False):
         return p.returncode
 
 
-def compareFiles(self):
-    listOfMCFiles = ls()
-    listOfPCFiles = pcLs()
-    import filecmp
-    print(listOfMCFiles, listOfPCFiles)
-    equals = []
-    for i in listOfMCFiles:
-        for j in listOfPCFiles:
-            if i == j:
-                equals.append(i)
-                break
-    print(equals)
-    import tempfile
-    for i, item in enumerate(equals):
+listOfFiles, listOfDirs = [], []
+def recursiveWalk(directory="."):
+    files = ls(directory)
+    for file in files:
+        if os.path.isdir(file):
+            listOfDirs.append(file)
+            recursiveWalk(file)
+        else:
+            listOfFiles.append(file)
+    return listOfFiles, listOfDirs
+
+def recursiveWalkPc(directory="."):
+    files = os.listdir(directory)
+    for file in files:
+        if os.path.isdir(file):
+            print(file)
+            listOfDirs.append(file)
+            recursiveWalkPc(file)
+        else:
+            listOfFiles.append(file)
+    return listOfFiles, listOfDirs
+
+
+def compareFiles():
+    #files = ls()
+    #print(files)
+    #files = os.listdir()
+    #print(files)
+
+    listOfMCFiles, listOfMCDirs = recursiveWalk()  # получили названия всех файлов и директорий с мк
+    #listOfPCFiles, listOfPCDirs = recursiveWalkPc()
+    print(listOfMCFiles, listOfMCDirs)
+    for item in listOfMCDirs:
+        path = os.path.join(os.getcwd(), "temp", item)
+        if not os.path.exists(path):
+            os.mkdir(path)
+
+    for item in listOfMCFiles:
         p = sub.Popen(["ampy", "get", item], stdout=sub.PIPE, stderr=sub.PIPE)
         out, err = p.communicate()
-
-        if os.path.isdir(item):
-            os.mkdir(os.path.join(os.getcwd(), "temp", item))
-
-        f = open("./temp/" + item, 'wb')
-        #f.write(out)
-        foo = out.decode('utf-8')
-        foo = foo[:-1]
-        foo2 = foo.replace('\r\n', os.linesep)
-        f.write(foo2.encode('utf-8'))
-        #print("./temp/" + item, "./" + item, filecmp.cmp("./temp/" + item, "./" + item))
-        #print(Fore.LIGHTBLUE_EX + f.read())
-        # if filecmp.cmp(mcfile.name, item):
-        #     print(mcfile, item, "Схожи")
-        #mcfile.close()
-    for i in os.listdir():
-        if os.path.isdir("./temp/" + i):
+        path = os.path.join(os.getcwd(), "temp", item)
+        with open(path, "wb") as f:
+            foo = out.decode('utf-8')
+            foo = foo[:-1]
+            foo2 = foo.replace('\r\n', os.linesep)
+            f.write(foo2.encode('utf-8'))
+        import filecmp
+    for item in listOfMCFiles:
+        path1 = os.path.join(os.getcwd(), "temp", item)
+        path2 = os.path.join(os.getcwd(), item)
+        if path2 == '/home/sapfir/evil-meteostation/./lib':
             continue
-        print("./temp/" + i, i)
-        # if item == "./temp/temp" or item == './temp/scripts':
-        #     continue
-        # print(filecmp.cmp("./temp/" + i, i))
+        if path1 == '/home/sapfir/evil-meteostation/./temp/changes.diff':
+            continue
+
+        print(filecmp.cmp(path1, path2))
+        print(path1, path2)
+
 
 
 def pcLs(directory="."):
@@ -96,8 +116,8 @@ def pcLs(directory="."):
     return files
 
 
-def ls() -> list:
-    files: str = sub.check_output(["ampy", "ls"]).decode('utf-8')
+def ls(directory='') -> list:
+    files: str = sub.check_output(["ampy", "ls", directory]).decode('utf-8')
     listOfFiles: list = files.split("\n/")
     listOfFiles[0] = listOfFiles[0][1:]
     listOfFiles[len(listOfFiles) - 1] = listOfFiles[len(listOfFiles) - 1][:-1]
@@ -138,44 +158,12 @@ def pushAllFiles(directory="."):
             print(f"Pushing file {pathToFile}")
 
 
-upload(compareFiles=True)
+parser = argparse.ArgumentParser(description="Micropython uploader")
+parser.add_argument('-c', '--cache', action="store_true", help="Disable remove old files from microcontroller. May be dangerous for u")
+parser.add_argument('--compare', action="store_true", help="It will compaired all files in mk and in current directory and push only differently files. ")
+args = parser.parse_args()
+print(args)
+upload(directory=".", removeOldFiles=not args.cache, compairFiles=args.compare, excludedFiles=[])
 
-
-# def compareFiles(self):
-# listOfMCFiles = self.ls()
-# listOfPCFiles = self.pcLs()
-# import filecmp
-# print(listOfMCFiles, listOfPCFiles)
-# equals = []
-# for i in listOfMCFiles:
-#     for j in listOfPCFiles:
-#         if i == j:
-#             equals.append(i)
-#             break
-# print(equals)
-# import tempfile
-# for i, item in enumerate(equals):
-#     p = sub.Popen(["ampy", "get", item], stdout=sub.PIPE, stderr=sub.PIPE)
-#     out, err = p.communicate()
-#     mcfile = tempfile.NamedTemporaryFile()
-#     mcfile.write(out)
-#     mcfile.seek(0)
-#     from colorama import Fore
-#     # print(mcfile.name)
-#     # print(mcfile.name, item, "Не схожи")
-#     # print(Fore.LIGHTGREEN_EX + mcfile.read().decode('utf-8'))
-#     if item == "net" or item == "scripts":
-#         continue
-#     with open(item) as f:
-#         f.read()
-#         # print(Fore.LIGHTBLUE_EX + f.read())
-#     print(filecmp.cmp(mcfile.name, item))
-#     # if filecmp.cmp(mcfile.name, item):
-#     #     print(mcfile, item, "Схожи")
-#     # mcfile.close()
 #
-# # for i in equals:
-# #     # for j in listOfPCFiles:
-# #     #    print(filecmp.cmp(i, j))
-# #     if filecmp.cmp(i, j):
-# #         print(i, j)
+
