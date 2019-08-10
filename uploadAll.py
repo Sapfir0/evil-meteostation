@@ -4,11 +4,12 @@ from helpers.timeChecker import checkElapsedTime
 import argparse
 
 def upload(directory=".", removeOldFiles=True, compairFiles=False, excludedFiles=[]):
-    if compairFiles:
-        compareFiles()
     if removeOldFiles:
         removeOldFilesFromMC()
-    pushAllFiles(directory)
+    if compairFiles:
+        compareFiles()
+    else:
+        pushAllFiles(directory)
     run()
 
 
@@ -75,6 +76,9 @@ def recursiveWalkPc(directory="."):
 
 
 def compareFiles():
+    import filecmp
+    import tempfile
+
     #files = ls()
     #print(files)
     #files = os.listdir()
@@ -84,30 +88,40 @@ def compareFiles():
     #listOfPCFiles, listOfPCDirs = recursiveWalkPc()
     print(listOfMCFiles, listOfMCDirs)
     for item in listOfMCDirs:
-        path = os.path.join(os.getcwd(), "temp", item)
+        path = os.path.join("/tmp", item)
         if not os.path.exists(path):
             os.mkdir(path)
 
     for item in listOfMCFiles:
+        if not item:
+            continue
         p = sub.Popen(["ampy", "get", item], stdout=sub.PIPE, stderr=sub.PIPE)
         out, err = p.communicate()
-        path = os.path.join(os.getcwd(), "temp", item)
+        path = os.path.join("/tmp", item)
         with open(path, "wb") as f:
             foo = out.decode('utf-8')
             foo = foo[:-1]
             foo2 = foo.replace('\r\n', os.linesep)
             f.write(foo2.encode('utf-8'))
-        import filecmp
+
     for item in listOfMCFiles:
-        path1 = os.path.join(os.getcwd(), "temp", item)
+        if not item or item == ['']:
+            print("Вылетаю")
+
+        path1 = os.path.join("/tmp", item)
         path2 = os.path.join(os.getcwd(), item)
+        print(path1, path2)
         if path2 == '/home/sapfir/evil-meteostation/./lib':
             continue
-        if path1 == '/home/sapfir/evil-meteostation/./temp/changes.diff':
-            continue
 
-        print(filecmp.cmp(path1, path2))
-        print(path1, path2)
+        fileDifferent = not filecmp.cmp(path1, path2)
+
+        if fileDifferent:
+            print("Файл отличается " + item)
+            push(item, item)
+        else:
+            print("Файл не изменился " + item)
+
 
 
 
@@ -162,7 +176,6 @@ parser = argparse.ArgumentParser(description="Micropython uploader")
 parser.add_argument('-c', '--cache', action="store_true", help="Disable remove old files from microcontroller. May be dangerous for u")
 parser.add_argument('--compare', action="store_true", help="It will compaired all files in mk and in current directory and push only differently files. ")
 args = parser.parse_args()
-print(args)
 upload(directory=".", removeOldFiles=not args.cache, compairFiles=args.compare, excludedFiles=[])
 
 #

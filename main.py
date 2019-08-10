@@ -1,4 +1,3 @@
-#import esp
 import config as cfg
 from net.wifi import WIFI
 net = WIFI()
