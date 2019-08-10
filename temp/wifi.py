@@ -21,15 +21,15 @@ class WIFI(object):
         upip.install("urequests")
 
     def do_connect(self):
-        import network
-        sta_if = network.WLAN(network.STA_IF)
+        import net
+        sta_if = net.WLAN(net.STA_IF)
         if not sta_if.isconnected():
-            print('connecting to network...')
+            print('connecting to net...')
             sta_if.active(True)
             sta_if.connect(cfg.ssid, cfg.password)
             while not sta_if.isconnected():
                 pass
-        print('network config:', sta_if.ifconfig())
+        print('net config:', sta_if.ifconfig())
     
 
     def getQuery(self, url):
@@ -84,6 +84,9 @@ class WIFI(object):
             "sunriseTime": self.sunriseTime,
             "sunsetTime": self.sunsetTime
         }
-        print(data)
-        #r = urequests.post(cfg.ourServer, data)
+        #print(data)
+        headers = {'content-type': 'application/json'}
 
+        r = urequests.post("http://api.openweathermap.org/data/2.5/weather?id={}&units=metric&APPID={}".format(cfg.cityId, cfg.APIKEY), data=data, headers=headers)
+        #)
+        r.close()
