@@ -20,23 +20,9 @@ class WIFI(object):
         import upip
         upip.install("urequests")
 
-    def do_connect(self):
-        import network
-        sta_if = network.WLAN(network.STA_IF)
-        if not sta_if.isconnected():
-            print('connecting to net...')
-            sta_if.active(True)
-            sta_if.connect(cfg.ssid, cfg.password)
-            while not sta_if.isconnected():
-                pass
-        print('net config:', sta_if.ifconfig())
-    
-
     def getQuery(self, url):
         import urequests
-
         r = urequests.get(url)
-        #print(r.json())
         self.parseWeatherJSON(r.json())
         r.close()
 
