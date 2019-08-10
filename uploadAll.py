@@ -3,13 +3,13 @@ import os
 from helpers.timeChecker import checkElapsedTime
 
 
-def upload(directory=".", removeOldFiles=True, compairFiles=False, excludedFiles=[]):
+def upload(directory=".", removeOldFiles=False, compairFiles=False, excludedFiles=[]):
     if compairFiles:
         compareFiles()
     if removeOldFiles:
         removeOldFilesFromMC()
-    pushAllFiles(directory)
-    run()
+    #pushAllFiles(directory)
+    #run()
 
 
 def push(input, output):
@@ -138,7 +138,7 @@ def pushAllFiles(directory="."):
             print(f"Pushing file {pathToFile}")
 
 
-upload(removeOldFiles=False)
+upload(compareFiles=True)
 
 
 # def compareFiles(self):
