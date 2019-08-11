@@ -47,8 +47,8 @@ class WIFI(object):
 
 
     
-    def postQuery(self, data):
-        from gradusnik import Gradusnik
+    def postQuery(self):
+        from sensors.gradusnik import Gradusnik
         import urequests
 
         grad = Gradusnik()
@@ -59,7 +59,7 @@ class WIFI(object):
             "temperature": self.temperature,
             "humidity": self.humidity,
             "pressure": others.toMmRtSt(self.pressure),
-            "sansity": 0 ,
+            "sansity": 0,
             "weatherId": self.weatherID,
             "windSpeed": self.windSpeed,
             "windDeg": self.windDeg,
@@ -69,9 +69,9 @@ class WIFI(object):
             "sunriseTime": self.sunriseTime,
             "sunsetTime": self.sunsetTime
         }
-        #print(data)
+        print(data)
         headers = {'content-type': 'application/json'}
 
-        #r = urequests.post("http://api.openweathermap.org/data/2.5/weather?id={}&units=metric&APPID={}".format(cfg.cityId, cfg.APIKEY), data=data, headers=headers)
-
-        #r.close()
+        r = urequests.post("https://meteo-server.herokuapp.com/meteostationData", data=data, headers=headers)
+        print(r)
+        r.close()
