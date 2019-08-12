@@ -69,9 +69,10 @@ class WIFI(object):
             "sunriseTime": self.sunriseTime,
             "sunsetTime": self.sunsetTime
         }
-        print(data)
         headers = {'content-type': 'application/json'}
 
-        r = urequests.post("https://meteo-server.herokuapp.com/meteostationData", data=data, headers=headers)
-        print(r)
+        link = "https://meteo-server.herokuapp.com/meteostationData"
+        #link = "http://httpbin.org/post"
+        r = urequests.post(link, json=data)
+        print(r.json())
         r.close()
