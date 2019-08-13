@@ -48,25 +48,6 @@ class Ourtype(object):
             self.weatherID = root["weather"][0]["id"]
             self.icon = root["weather"][0]["icon"]
 
-    def setYourJson(self):
-        data = {
-            "temperatureInHome": self.temperatureInHome,
-            "humidityInHome": self.humidityInHome,
-            "temperature": self.temperature,
-            "humidity": self.humidity,
-            "pressure": others.toMmRtSt(self.pressure),
-            "sansity": 0,
-            "weatherId": self.weatherID,
-            "windSpeed": self.windSpeed,
-            "windDeg": self.windDeg,
-            "icon": self.icon,
-            "engWeatherDescription": self.weatherDescription,
-            "meteostationId": cfg.meteostationId,
-            "sunriseTime": self.sunriseTime,
-            "sunsetTime": self.sunsetTime
-        }
-        return data
-
 
 def toDict(instance) -> dict:
     data = {
