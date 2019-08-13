@@ -1,4 +1,4 @@
-excludedDirs = ["__pycache__", ".*"]
+excludedDirs = ["__pycache__", ".*", "scripts"]
 includedFiles = ["*.py"]
 #Hi, here you can set files which will be pushed to microcontroller
 #On default, push

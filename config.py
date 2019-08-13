@@ -11,6 +11,7 @@ rgbPins = ["D5", "D8", "D7"]
 
 ourServer = "meteo-server.herokuapp.com"
 meteostationId = 1
+openweathermapUrl = "http://api.openweathermap.org/data/2.5/weather?id={}&units=metric&APPID={}".format(cityId, APIKEY)
 
 
 def defineAnalog(nodemcuPin):

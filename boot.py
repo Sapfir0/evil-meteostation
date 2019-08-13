@@ -10,3 +10,16 @@ def do_connect():
         while not sta_if.isconnected():
             pass
     print('net config:', sta_if.ifconfig())
+
+
+def install_modules():
+    import upip
+    import uasyncio
+    upip.install("urequests")
+    upip.install('micropython-uasyncio')
+    upip.install('micropython-uasyncio.synchro')
+    upip.install('micropython-uasyncio.queues')
+
+
+do_connect()
+install_modules()
